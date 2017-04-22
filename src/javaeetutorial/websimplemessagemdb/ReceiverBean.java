@@ -13,11 +13,10 @@ import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Model;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jms.JMSConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.JMSRuntimeException;
@@ -25,8 +24,9 @@ import javax.jms.Queue;
 
 import es.uv.etse.dbcd.EntityBean;
 
-@Named
-@RequestScoped
+//@Named
+//@RequestScoped
+@Model
 public class ReceiverBean {
 
     static final Logger logger = Logger.getLogger("ReceiverBean");
