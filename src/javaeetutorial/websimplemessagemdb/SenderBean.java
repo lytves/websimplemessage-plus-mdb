@@ -11,41 +11,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSConnectionFactory;
 import javax.jms.JMSContext;
+import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;
-import javax.jms.Queue;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
 
-//@JMSDestinationDefinition(
-//        name = "java:/jms/queue/webappQueue",
-//        interfaceName = "javax.jms.Queue",
-//        destinationName = "webappQueue")
 @Named
 @RequestScoped
 public class SenderBean {
 
     static final Logger logger = Logger.getLogger("SenderBean");
-    
-    /*
-     * It is possible to define the factory as variable or through annotation
-     * (Es posible definir la factoría como el variable o bien atraves de anotación)
-     */
-//  @Resource(lookup = "java:/jms/factoriaConexiones")
-//  private ConnectionFactory connectionFactory;
-    
+   
     @Inject
     @JMSConnectionFactory("java:/jms/factoriaConexiones") 
     private JMSContext context;
     
-    @Resource(lookup = "java:/jms/queue/webappQueue")
-    private Queue queue;
+    @Resource(lookup = "java:/jms/topic/webappTopic")
+    private Topic topic;
     private String messageText;
+    private String nameSender;
 
     /**
      * Creates a new instance of SenderBean
@@ -53,7 +45,15 @@ public class SenderBean {
     public SenderBean() {
     }
 
-    /**
+    public String getNameSender() {
+		return nameSender;
+	}
+
+	public void setNameSender(String nameSender) {
+		this.nameSender = nameSender;
+	}
+
+	/**
      * Get the value of messageText
      *
      * @return the value of messageText
@@ -77,19 +77,22 @@ public class SenderBean {
      * Create producer and send message.
      * Create FacesMessage to display on page.
      */
+    @Asynchronous
     public void sendMessage() {
+    	TextMessage message;
+        
         try {
-            String text = "Message from producer: " + messageText;
-//          context = connectionFactory.createContext();
-            context.createProducer().send(queue, text);
+        	message = context.createTextMessage();
+        	message.setStringProperty("nameSender", nameSender);
+        	message.setText(messageText);
+        	
+        	logger.log(Level.INFO, "SENDER BEAN: Send message with text: {0}", message.getText());
+            context.createProducer().send(topic, message);
 
-            FacesMessage facesMessage =
-                    new FacesMessage("Sent message: " + text);
+            FacesMessage facesMessage = new FacesMessage("Sent message: " + messageText + ", from: " + nameSender);
             FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-        } catch (JMSRuntimeException t) {
-            logger.log(Level.SEVERE,
-                    "SenderBean.sendMessage: Exception: {0}",
-                    t.toString());
+        } catch (JMSRuntimeException | JMSException t) {
+            logger.log(Level.SEVERE, "SenderBean.sendMessage: Exception: {0}", t.toString());
         }
     }
 }
