@@ -27,8 +27,12 @@ import es.uv.etse.dbcd.EntityBean;
             propertyValue = "java:/jms/topic/webappTopic"),
     @ActivationConfigProperty(propertyName = "destinationType",
             propertyValue = "javax.jms.Topic"),
+    
+    //Aquí espicificamos el nombre del remitente "nameSender" de quien el MDB recive los mensajes
+    //Here we specify the name of the sender "nameSender" from whom the MDB receives the messages
     @ActivationConfigProperty(propertyName = "messageSelector",
             propertyValue = "nameSender = 'ETSE'"),
+    
 //    @ActivationConfigProperty(propertyName = "subscriptionDurability",
 //            propertyValue = "Durable"),
 //    @ActivationConfigProperty(propertyName = "clientId",
