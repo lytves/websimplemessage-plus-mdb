@@ -18,10 +18,7 @@ import es.uv.etse.dbcd.EntityBean;
 /**
  * Message-Driven Bean implementation class for: ReceiverMDBBean
  */
-//@JMSDestinationDefinition(
-//        name = "java:/jms/topic/webappTopic",
-//        interfaceName = "javax.jms.Topic",
-//        destinationName = "PhysicalNewsTopic")
+
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "destinationLookup",
             propertyValue = "java:/jms/topic/webappTopic"),
@@ -31,17 +28,8 @@ import es.uv.etse.dbcd.EntityBean;
     //Aquí espicificamos el nombre del remitente "nameSender" de quien el MDB recive los mensajes
     //Here we specify the name of the sender "nameSender" from whom the MDB receives the messages
     @ActivationConfigProperty(propertyName = "messageSelector",
-            propertyValue = "nameSender = 'ETSE'"),
-    
-//    @ActivationConfigProperty(propertyName = "subscriptionDurability",
-//            propertyValue = "Durable"),
-//    @ActivationConfigProperty(propertyName = "clientId",
-//            propertyValue = "MyID"),
-//    @ActivationConfigProperty(propertyName = "subscriptionName",
-//            propertyValue = "MySub")
+            propertyValue = "nameSender = 'ETSE'")
 })
-
-
 public class ReceiverMDBBean implements MessageListener {
 
     static final Logger logger = Logger.getLogger("ReceiverMDBBean");
@@ -63,7 +51,6 @@ public class ReceiverMDBBean implements MessageListener {
 
         try {
             if (inMessage instanceof TextMessage) {
-                //logger.log(Level.INFO, "ReceiverMDBBean: Message received: {0}", inMessage.getBody(String.class));
 
                 String messageReceived = inMessage.getBody(String.class);
                 
